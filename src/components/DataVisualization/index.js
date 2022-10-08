@@ -4,8 +4,6 @@ import ReactECharts from "echarts-for-react";
 import DataVisualizationWrapper from "./styled.DataVisualization";
 const DataVisualization = () => {
   const [data, setData] = useState(JsonData);
-  const [Hues, setHues] = useState([]);
-  const [ColorIntensity, setColorIntensity] = useState({});
   const [averageAMalic, setAverageAMalic] = useState(0);
   const [averageBMalic, setAverageBMalic] = useState(0);
   const [averageCMalic, setAverageCMalic] = useState(0);
@@ -17,42 +15,18 @@ const DataVisualization = () => {
   });
   const [scatterOptions, setScatterOptions] = useState({});
 
-  const getData = (url) => {
-    fetch(url, {
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-    })
-      .then(function (response) {
-        console.log("rew", response);
-        return response.json();
-      })
-      .then(function (myJson) {
-        console.log(myJson);
-        //setData(myJson);
-      });
-  };
-  const averageA = (categoryAData) => {
-    const MalicA = categoryAData.map((ele) => ele["Malic Acid"]);
-    const averageAData = (
-      MalicA.reduce((a, b) => a + b, 0) / MalicA.length
+  //Calculate function of Mallic Acid of Different Alcohold
+  const averageCalculate = (categoryData, type) => {
+    const Malic = categoryData.map((ele) => ele["Malic Acid"]);
+    const averageData = (
+      Malic.reduce((a, b) => a + b, 0) / Malic.length
     ).toFixed(2);
-    setAverageAMalic(averageAData);
-  };
-  const averageB = (categoryBData) => {
-    const MalicB = categoryBData.map((ele) => ele["Malic Acid"]);
-    const averageBData = (
-      MalicB.reduce((a, b) => a + b, 0) / MalicB.length
-    ).toFixed(2);
-    setAverageBMalic(averageBData);
-  };
-  const averageC = (categoryCData) => {
-    const MalicC = categoryCData.map((ele) => ele["Malic Acid"]);
-    const averageCData = (
-      MalicC.reduce((a, b) => a + b, 0) / MalicC.length
-    ).toFixed(2);
-    setAverageCMalic(averageCData);
+
+    type == "A"
+      ? setAverageAMalic(averageData)
+      : type == "B"
+      ? setAverageBMalic(averageData)
+      : setAverageCMalic(averageData);
   };
   const setDimension = () => {
     getDimension({
@@ -62,6 +36,7 @@ const DataVisualization = () => {
   };
 
   useEffect(() => {
+    //options for different type Bar-Chart
     setOptions({
       grid: {
         left:
@@ -101,9 +76,9 @@ const DataVisualization = () => {
         },
       ],
     });
-    console.log(options);
   }, [averageAMalic, averageBMalic, averageCMalic, screenSize]);
   useEffect(() => {
+    //options for Scatter Plot
     setScatterOptions({
       grid: {
         left:
@@ -153,9 +128,7 @@ const DataVisualization = () => {
       return [value, ColorIntensityData[index]];
     });
     setScatter(scatterData);
-    console.log(scatterData);
-    setHues(HuesData);
-    setColorIntensity(ColorIntensityData);
+
     const categoryA = [];
     const categoryB = [];
     const categoryC = [];
@@ -166,9 +139,10 @@ const DataVisualization = () => {
         ? categoryB.push(ele)
         : categoryC.push(ele);
     });
-    averageA(categoryA);
-    averageB(categoryB);
-    averageC(categoryC);
+
+    averageCalculate(categoryA, "A");
+    averageCalculate(categoryB, "B");
+    averageCalculate(categoryC, "C");
   }, []);
 
   return (
@@ -187,8 +161,6 @@ const DataVisualization = () => {
             <ReactECharts option={options} />
             <span>Bar-Chart</span>
           </div>
-
-          {console.log(screenSize.dynamicWidth)}
         </div>
       </div>
     </DataVisualizationWrapper>
