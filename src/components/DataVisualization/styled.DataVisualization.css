@@ -1,0 +1,60 @@
+.container {
+  width: 90%;
+  margin: auto;
+  display: flex;
+  padding-top: 15%;
+
+  flex-direction: column;
+
+}
+
+.heading_title {
+  font-size: 50px;
+  font-weight: 800;
+  font-style: italic;
+  color: white;
+}
+
+.body {
+  margin-top: 5%;
+  display: grid;
+  grid-template-columns: 50% 50%;
+
+
+
+
+}
+
+.graph1,
+.graph2 {
+  display: flex;
+  flex-direction: column;
+
+
+}
+
+.graph_name {
+  font-weight: 700;
+  font-size: 24px;
+}
+
+@media only screen and (max-width: 576px) and (min-width: 321px) {
+  .heading_title {
+    font-size: 30px;
+  }
+}
+
+@media only screen and (max-width: 320px) {
+  .heading_title {
+    font-size: 25px;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .body {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    margin-bottom: 150px;
+  }
+}

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import JsonData from "../../assets/data/Wine-Data.json";
-import ReactECharts from "echarts-for-react";
-import DataVisualizationWrapper from "./styled.DataVisualization";
+import styles from "./styled.DataVisualization.css";
+import ScatterComponent from "../ScatterComponent";
+import BarChartComponent from "../BarChartComponent";
 const DataVisualization = () => {
   const [data, setData] = useState(JsonData);
   const [averageAMalic, setAverageAMalic] = useState(0);
@@ -76,7 +77,7 @@ const DataVisualization = () => {
         },
       ],
     });
-  }, [averageAMalic, averageBMalic, averageCMalic, screenSize]);
+  }, [averageAMalic, averageBMalic, averageCMalic]);
   useEffect(() => {
     //options for Scatter Plot
     setScatterOptions({
@@ -110,14 +111,7 @@ const DataVisualization = () => {
         },
       ],
     });
-  }, [scatter, screenSize]);
-  useEffect(() => {
-    window.addEventListener("resize", setDimension);
-
-    return () => {
-      window.removeEventListener("resize", setDimension);
-    };
-  }, [screenSize]);
+  }, [scatter]);
 
   useEffect(() => {
     const items = data;
@@ -146,24 +140,17 @@ const DataVisualization = () => {
   }, []);
 
   return (
-    <DataVisualizationWrapper>
+    <>
       <div className="container">
-        <div className="container__heading">
-          <span>Data Visualization</span>{" "}
+        <div className="heading">
+          <span className="heading_title">Data Visualization</span>{" "}
         </div>
-        <div className="container__body">
-          <div className="container__body__graph1">
-            <ReactECharts option={scatterOptions} />
-
-            <span>Scatter-Plot</span>
-          </div>
-          <div className="container__body__graph2">
-            <ReactECharts option={options} />
-            <span>Bar-Chart</span>
-          </div>
+        <div className="body">
+          <ScatterComponent data={scatterOptions} />
+          <BarChartComponent data={options} />
         </div>
       </div>
-    </DataVisualizationWrapper>
+    </>
   );
 };
 export default DataVisualization;
