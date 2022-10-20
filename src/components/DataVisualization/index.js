@@ -5,9 +5,8 @@ import ScatterComponent from "../ScatterComponent";
 import BarChartComponent from "../BarChartComponent";
 const DataVisualization = () => {
   const [data, setData] = useState(JsonData);
-  const [averageAMalic, setAverageAMalic] = useState(0);
-  const [averageBMalic, setAverageBMalic] = useState(0);
-  const [averageCMalic, setAverageCMalic] = useState(0);
+  const [averageMalic, setAverageMalic] = useState([]);
+  const [types, setTypes] = useState([]);
   const [options, setOptions] = useState({});
   const [scatter, setScatter] = useState([]);
   const [screenSize, getDimension] = useState({
@@ -19,21 +18,13 @@ const DataVisualization = () => {
   //Calculate function of Mallic Acid of Different Alcohold
   const averageCalculate = (categoryData, type) => {
     const Malic = categoryData.map((ele) => ele["Malic Acid"]);
+
     const averageData = (
       Malic.reduce((a, b) => a + b, 0) / Malic.length
     ).toFixed(2);
-
-    type == "A"
-      ? setAverageAMalic(averageData)
-      : type == "B"
-      ? setAverageBMalic(averageData)
-      : setAverageCMalic(averageData);
-  };
-  const setDimension = () => {
-    getDimension({
-      dynamicWidth: window.innerWidth,
-      dynamicHeight: window.innerHeight,
-    });
+    let avgObject = {};
+    avgObject[type] = averageData || {};
+    return avgObject;
   };
 
   useEffect(() => {
@@ -53,7 +44,7 @@ const DataVisualization = () => {
       color: ["pink"],
       xAxis: {
         type: "category",
-        data: ["A", "B", "C"],
+        data: types,
         axisLabel: { fontSize: 16, color: "darkBlue", fontWeight: 800 },
         axisLine: { lineStyle: { color: "cyan", width: 3 } },
       },
@@ -71,13 +62,13 @@ const DataVisualization = () => {
 
       series: [
         {
-          data: [averageAMalic, averageBMalic, averageCMalic],
+          data: averageMalic,
           type: "bar",
           smooth: true,
         },
       ],
     });
-  }, [averageAMalic, averageBMalic, averageCMalic]);
+  }, [averageMalic]);
   useEffect(() => {
     //options for Scatter Plot
     setScatterOptions({
@@ -123,20 +114,29 @@ const DataVisualization = () => {
     });
     setScatter(scatterData);
 
-    const categoryA = [];
-    const categoryB = [];
-    const categoryC = [];
-    items.map((ele, index) => {
-      ele.Alcohol === 1
-        ? categoryA.push(ele)
-        : ele.Alcohol === 2
-        ? categoryB.push(ele)
-        : categoryC.push(ele);
-    });
+    const types = {};
+    const arr = [];
 
-    averageCalculate(categoryA, "A");
-    averageCalculate(categoryB, "B");
-    averageCalculate(categoryC, "C");
+    items.map((ele, index) => {
+      if (types[ele.Alcohol.toString()]) {
+        types[ele.Alcohol.toString()].push(ele);
+      } else {
+        types[ele.Alcohol.toString()] = [
+          {
+            ...ele,
+          },
+        ];
+      }
+    });
+    let typesEle = Object.keys(types);
+
+    for (let i = 0; i < typesEle.length; i++) {
+      const element = typesEle[i];
+      let result = averageCalculate(types[element], element);
+      arr.push(Number(Object.values(result).toString()));
+    }
+    setTypes(typesEle);
+    setAverageMalic(arr);
   }, []);
 
   return (
